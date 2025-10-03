@@ -2,7 +2,7 @@ const { resolve } = require('path')
 const themeConfig = require('@spiralbtc/vuepress-devkit-theme/config')
 
 const title = 'Payjoin Dev Kit Documentation'
-const baseUrl = 'https://payjoindevkit.org'
+const baseUrl = 'https://xstoicunicornx.github.io'
 const githubUrl = 'https://github.com/payjoin'
 const discordUrl = 'https://discord.gg/6rJD9R684h'
 const themeColor = '#ffffff'
