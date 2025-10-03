@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Notes on payjoin v1 infrastructure | Payjoin Dev Kit Documentation</title>
+    <meta name="generator" content="VuePress 1.9.7">
+    <link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" crossorigin="true">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link name="msapplication-config" content="/browserconfig.xml">
+    <link name="msapplication-TileColor" content="#ffffff">
+    <link name="theme-color" content="#ffffff">
+    <meta name="description" content="A guide on setting up a payjoin receiver on signet">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    
+    <link rel="preload" href="/assets/css/0.styles.467705ec.css" as="style"><link rel="preload" href="/assets/js/app.f563d265.js" as="script"><link rel="preload" href="/assets/js/9.9d8ca1c3.js" as="script"><link rel="preload" href="/assets/js/1.6444ba8b.js" as="script"><link rel="preload" href="/assets/js/16.6d958b8b.js" as="script"><link rel="prefetch" href="/assets/js/10.01a91c65.js"><link rel="prefetch" href="/assets/js/11.85a5cab1.js"><link rel="prefetch" href="/assets/js/12.a5fee135.js"><link rel="prefetch" href="/assets/js/13.2b49e7e6.js"><link rel="prefetch" href="/assets/js/14.95d3dbae.js"><link rel="prefetch" href="/assets/js/15.5b55d409.js"><link rel="prefetch" href="/assets/js/17.561c5819.js"><link rel="prefetch" href="/assets/js/18.d498fb75.js"><link rel="prefetch" href="/assets/js/19.52bef382.js"><link rel="prefetch" href="/assets/js/20.e87ec4e0.js"><link rel="prefetch" href="/assets/js/21.cfd55a4f.js"><link rel="prefetch" href="/assets/js/22.babf25b5.js"><link rel="prefetch" href="/assets/js/23.3f8d668e.js"><link rel="prefetch" href="/assets/js/24.d6c628e0.js"><link rel="prefetch" href="/assets/js/25.d5ebdabb.js"><link rel="prefetch" href="/assets/js/26.5e71e79f.js"><link rel="prefetch" href="/assets/js/5.c60bdca0.js"><link rel="prefetch" href="/assets/js/6.6f718fa7.js"><link rel="prefetch" href="/assets/js/7.75d98a97.js"><link rel="prefetch" href="/assets/js/8.dcf2236f.js"><link rel="prefetch" href="/assets/js/vendors~docsearch.567a400b.js"><link rel="prefetch" href="/assets/js/vuejs-paginate.e2882327.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.467705ec.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container" data-v-b812d5fc data-v-92b43a16><header class="navbar" data-v-b812d5fc><div class="wrap"><div class="wrap-border"><a href="/" class="home-link router-link-active"><svg role="img" alt="Payjoin Dev Kit Documentation" class="logo"><use href="/img/logo.svg#small" class="small"></use> <use href="/img/logo.svg#large" class="large"></use></svg></a> <div class="links"><nav class="nav-links can-hide"><div class="nav-item"><a href="/introduction/" class="nav-link">
+  Docs
+</a></div><div class="nav-item"><a href="/tutorials/getting-started.html" class="nav-link">
+  Tutorials
+</a></div><div class="nav-item"><a href="https://bitcoin.design/guide/case-studies/payjoin/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Case Study
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div><div class="nav-item"><a href="/blog/" class="nav-link">
+  Blog
+</a></div><div class="nav-item"><a href="https://discord.gg/6rJD9R684h" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Discord
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div><div class="nav-item"><a href="https://github.com/payjoin" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  GitHub
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div> <a href="https://github.com/payjoin/payjoindevkit.org" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></nav> <form id="search-form" role="search" class="algolia-search-wrapper search-box"><input id="algolia-search-input" class="search-query"></form> <button type="button" class="theme-switch"><svg viewBox="0 0 30 31" fill="none" xmlns="http://www.w3.org/2000/svg"><g class="theme-switch-dark"><path d="M15 20.4219C12.5187 20.4219 10.5 18.4032 10.5 15.9219C10.5 13.4406 12.5187 11.4219 15 11.4219C17.4813 11.4219 19.5 13.4406 19.5 15.9219C19.5 18.4032 17.4813 20.4219 15 20.4219Z" fill="currentColor"></path> <path d="M19.4541 20.3769L21.3644 22.2862M15 24.9219V22.2219V24.9219ZM15 9.62187V6.92188V9.62187ZM6 15.9219H8.7H6ZM21.3 15.9219H24H21.3ZM8.6361 22.2862L10.5454 20.3769L8.6361 22.2862ZM19.4541 11.4678L21.3644 9.55797L19.4541 11.4678ZM8.6361 9.55797L10.5454 11.4678L8.6361 9.55797Z" stroke="currentColor" stroke-width="1" stroke-linecap="round"></path></g> <g fill="currentColor" class="theme-switch-light"><path d="M10.1539 8.75585C10.018 8.75585 9.88774 8.70189 9.79168 8.60583C9.69563 8.50977 9.64166 8.37949 9.64166 8.24365V6.19482C9.64166 6.05898 9.69563 5.9287 9.79168 5.83264C9.88774 5.73658 10.018 5.68262 10.1539 5.68262C10.2897 5.68262 10.42 5.73658 10.5161 5.83264C10.6121 5.9287 10.6661 6.05898 10.6661 6.19482V8.24365C10.6661 8.37949 10.6121 8.50977 10.5161 8.60583C10.42 8.70189 10.2897 8.75585 10.1539 8.75585Z"></path> <path d="M11.1783 7.73144H9.12945C8.9936 7.73144 8.86332 7.67748 8.76726 7.58142C8.6712 7.48536 8.61724 7.35508 8.61724 7.21924C8.61724 7.08339 8.6712 6.95311 8.76726 6.85705C8.86332 6.761 8.9936 6.70703 9.12945 6.70703H11.1783C11.3141 6.70703 11.4444 6.761 11.5405 6.85705C11.6365 6.95311 11.6905 7.08339 11.6905 7.21924C11.6905 7.35508 11.6365 7.48536 11.5405 7.58142C11.4444 7.67748 11.3141 7.73144 11.1783 7.73144ZM6.05621 13.8779C5.92037 13.8779 5.79009 13.8239 5.69403 13.7279C5.59797 13.6318 5.54401 13.5015 5.54401 13.3657V12.3413C5.54401 12.2054 5.59797 12.0752 5.69403 11.9791C5.79009 11.8831 5.92037 11.8291 6.05621 11.8291C6.19206 11.8291 6.32234 11.8831 6.4184 11.9791C6.51445 12.0752 6.56842 12.2054 6.56842 12.3413V13.3657C6.56842 13.5015 6.51445 13.6318 6.4184 13.7279C6.32234 13.8239 6.19206 13.8779 6.05621 13.8779Z"></path> <path d="M6.56842 13.366H5.544C5.40816 13.366 5.27788 13.312 5.18182 13.216C5.08576 13.1199 5.0318 12.9896 5.0318 12.8538C5.0318 12.7179 5.08576 12.5877 5.18182 12.4916C5.27788 12.3955 5.40816 12.3416 5.544 12.3416H6.56842C6.70426 12.3416 6.83454 12.3955 6.9306 12.4916C7.02666 12.5877 7.08062 12.7179 7.08062 12.8538C7.08062 12.9896 7.02666 13.1199 6.9306 13.216C6.83454 13.312 6.70426 13.366 6.56842 13.366ZM16.8125 23.6101C12.8583 23.6101 9.64165 20.3934 9.64165 16.4392C9.64165 12.8983 12.2851 9.85021 15.7907 9.34876L16.4658 9.25195L16.37 9.92755C16.326 10.218 16.3027 10.5112 16.3003 10.805C16.3003 14.1942 19.0575 16.9514 22.4468 16.9514C22.708 16.9514 22.9872 16.9294 23.3247 16.8813L23.9998 16.7855L23.9035 17.4606C23.401 20.9666 20.3524 23.6101 16.8125 23.6101Z"></path></g></svg></button></div> <div class="sidebar-button"><svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" class="icon"><g fill="currentColor" class="hamburger"><path d="M33.75 11.6699H6.25C5.55964 11.6699 5 12.2296 5 12.9199C5 13.6103 5.55964 14.1699 6.25 14.1699H33.75C34.4404 14.1699 35 13.6103 35 12.9199C35 12.2296 34.4404 11.6699 33.75 11.6699Z"></path> <path d="M28.75 18.752H6.25C5.55964 18.752 5 19.3116 5 20.002C5 20.6923 5.55964 21.252 6.25 21.252H28.75C29.4404 21.252 30 20.6923 30 20.002C30 19.3116 29.4404 18.752 28.75 18.752Z"></path> <path d="M33.75 25.8301H6.25C5.55964 25.8301 5 26.3897 5 27.0801C5 27.7704 5.55964 28.3301 6.25 28.3301H33.75C34.4404 28.3301 35 27.7704 35 27.0801C35 26.3897 34.4404 25.8301 33.75 25.8301Z"></path></g> <g stroke="currentColor" class="close"><path d="M10 10L30 30" stroke-width="2" stroke-linecap="round"></path> <path d="M30 10L10 30" stroke-width="2" stroke-linecap="round"></path></g></svg></div></div></div></header> <div class="wrap" data-v-b812d5fc><div class="wrap-border" data-v-b812d5fc><div class="sidebar-mask" data-v-b812d5fc></div> <aside class="sidebar" data-v-b812d5fc><nav class="nav-links"><div class="nav-item"><a href="/introduction/" class="nav-link">
+  Docs
+</a></div><div class="nav-item"><a href="/tutorials/getting-started.html" class="nav-link">
+  Tutorials
+</a></div><div class="nav-item"><a href="https://bitcoin.design/guide/case-studies/payjoin/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Case Study
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div><div class="nav-item"><a href="/blog/" class="nav-link">
+  Blog
+</a></div><div class="nav-item"><a href="https://discord.gg/6rJD9R684h" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Discord
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div><div class="nav-item"><a href="https://github.com/payjoin" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  GitHub
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div> <a href="https://github.com/payjoin/payjoindevkit.org" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>Blog</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/blog/" class="sidebar-link">Articles</a></li><li><a href="/blog/tags/" class="sidebar-link">Tags</a></li><li><a href="/blog/author/" class="sidebar-link">Authors</a></li></ul></section></li></ul> </aside> <main class="page" data-v-92b43a16><header class="theme-default-content post-header" data-v-92b43a16><h1 data-v-92b43a16>Notes on payjoin v1 infrastructure</h1> <p class="meta" data-v-0f148fb8 data-v-92b43a16>
+  By
+
+  <span data-v-0f148fb8><a href="/blog/author/spacebear" class="meta-link" data-v-0f148fb8>spacebear</a><!----></span>
+
+  on
+
+  5/23/2024
+
+  - Tags:
+
+  <span data-v-0f148fb8><a href="/blog/tags/PDK" class="meta-link" data-v-0f148fb8>PDK</a>, </span><span data-v-0f148fb8><a href="/blog/tags/Infrastructure" class="meta-link" data-v-0f148fb8>Infrastructure</a><!----></span></p> <hr data-v-92b43a16></header> <div class="theme-default-content content__default"><br> <p>Payjoin v1 coordinates payjoins over a public server endpoint secured by either TLS or Tor hidden service hosted by the receiver. This requires setting up either a HTTPS proxy or a Tor proxy when testing payjoins across different implementations.</p> <h2 id="setting-up-a-https-payjoin-server-with-nginx"><a href="#setting-up-a-https-payjoin-server-with-nginx" class="header-anchor">#</a> Setting up a HTTPS payjoin server with nginx</h2> <p>This guide requires a dedicated server that you can <code>ssh</code> into, with the ability to <code>sudo</code>, and a domain name pointing to that server.</p> <h3 id="configure-a-nginx-proxy"><a href="#configure-a-nginx-proxy" class="header-anchor">#</a> Configure a nginx proxy</h3> <p>First, ensure nginx is installed on the server or <a href="https://nginx.org/en/docs/install.html" target="_blank" rel="noopener noreferrer">install nginx<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>.</p> <p>Then, we'll edit <code>/etc/nginx/nginx.conf</code> to proxy traffic to the payjoin server (more on that later) by adding the following block:</p> <div class="language- extra-class"><pre class="language-text"><code># nginx.conf
+    server {
+        server_name pj.example.com; # Replace this with your domain name
+
+        location / {
+            proxy_pass http://localhost:3000; # This is the port on which we'll run the payjoin server
+
+            proxy_set_header        Host $host;
+            proxy_set_header        X-Real-IP $remote_addr;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header        X-Forwarded-Proto $scheme;
+        }
+    }
+</code></pre></div><p>Note that the above configuration uses the <code>pj</code> subdomain to avoid conflicts with anything that may already be running on the root domain.</p> <h3 id="get-a-certificate"><a href="#get-a-certificate" class="header-anchor">#</a> Get a certificate</h3> <p>Next, we'll need to obtain a valid TLS certificate from a Certificate Authority. There are many ways to do this, but one free and relatively easy option is to use <a href="https://certbot.eff.org/instructions" target="_blank" rel="noopener noreferrer">certbot<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>, an open-source tool by <a href="https://letsencrypt.org" target="_blank" rel="noopener noreferrer">letsencrypt.org<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a>.</p> <p>Once certbot is installed, we can obtain a certificate and automatically update the nginx configuration:</p> <p><code>sudo certbot -d &lt;server_name from the nginx.conf above&gt; --nginx</code></p> <p><code>/etc/nginx/nginx.conf</code> should now look something like this:</p> <div class="language- extra-class"><pre class="language-text"><code># nginx.conf
+    server {
+        server_name pj.example.com;
+
+        location / {
+            proxy_pass http://localhost:3000;
+
+            proxy_set_header        Host $host;
+            proxy_set_header        X-Real-IP $remote_addr;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header        X-Forwarded-Proto $scheme;
+        }
+
+        listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem; # managed by Certbot
+        include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+        ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+    }
+</code></pre></div><p>Verify the installation with <code>curl</code>:</p> <div class="language- extra-class"><pre class="language-text"><code>[ec2-user@ip-172-31-94-70 ~]$ curl -v https://&lt;server_name&gt;
+* Host pj.example.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 54.156.128.153
+*   Trying 54.156.128.153:443...
+* Connected to pj.example.com (54.156.128.153) port 443
+* ALPN: curl offers h2,http/1.1
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* TLSv1.3 (IN), TLS handshake, Server hello (2):
+* TLSv1.3 (IN), TLS handshake, Encrypted Extensions (8):
+* TLSv1.3 (IN), TLS handshake, Certificate (11):
+* TLSv1.3 (IN), TLS handshake, CERT verify (15):
+* TLSv1.3 (IN), TLS handshake, Finished (20):
+* TLSv1.3 (OUT), TLS change cipher, Change cipher spec (1):
+* TLSv1.3 (OUT), TLS handshake, Finished (20):
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384 / X25519 / id-ecPublicKey
+* ALPN: server accepted http/1.1
+* Server certificate:
+*  subject: CN=spacebear.dev
+*  start date: Apr 18 01:37:16 2024 GMT
+*  expire date: Jul 17 01:37:15 2024 GMT
+*  subjectAltName: host &quot;pj.example.com&quot; matched cert's &quot;pj.example.com&quot;
+*  issuer: C=US; O=Let's Encrypt; CN=R3
+*  SSL certificate verify ok.
+
+...
+
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;502 Bad Gateway&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+&lt;center&gt;&lt;h1&gt;502 Bad Gateway&lt;/h1&gt;&lt;/center&gt;
+&lt;hr&gt;&lt;center&gt;nginx/1.25.0&lt;/center&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre></div><p>If everything worked, we should see &quot;SSL certificate verify ok.&quot;! We now have a legit HTTPS server proxying traffic to port 3000, but as indicated by the 502 error there is nothing running there. The next step is to setup a payjoin receiver to run on that port.</p> <h4 id="optional-make-a-cronjob-to-auto-renew-the-certificate-on-a-schedule"><a href="#optional-make-a-cronjob-to-auto-renew-the-certificate-on-a-schedule" class="header-anchor">#</a> (Optional) Make a cronjob to auto-renew the certificate on a schedule</h4> <div class="language- extra-class"><pre class="language-text"><code>echo &quot;0 0,12 * * * root /opt/certbot/bin/python -c 'import random; import time; time.sleep(random.random() * 3600)' &amp;&amp; sudo certbot renew -q&quot; | sudo tee -a /etc/crontab &gt; /dev/null
+</code></pre></div><h3 id="set-up-bitcoin-core-on-signet"><a href="#set-up-bitcoin-core-on-signet" class="header-anchor">#</a> Set up Bitcoin Core on signet</h3> <p>Because we're testing between wallets on different machines, regtest won't work (at least not trivially). We need a &quot;real&quot; Bitcoin network like signet. <a href="https://bitcoincore.org/" target="_blank" rel="noopener noreferrer">Install Bitcoin Core<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> and edit <code>~/.bitcoin/bitcoin.conf</code>:</p> <div class="language- extra-class"><pre class="language-text"><code># bitcoin.conf
+chain=signet
+server=1
+rpcuser=payjoin
+rpcpassword=payjoin
+</code></pre></div><p><code>bitcoind</code> will take a few minutes to sync. In the meantime, let's create <code>sender</code> and <code>receiver</code> wallets and fund them. Use a signet faucet like https://signetfaucet.com/ if you don't have any signet coins on hand.</p> <h3 id="install-and-run-payjoin-cli-receiver"><a href="#install-and-run-payjoin-cli-receiver" class="header-anchor">#</a> Install and run payjoin-cli receiver</h3> <p>Finally, we'll install (or build from source) <a href="https://github.com/payjoin/rust-payjoin/tree/master/payjoin-cli#install-payjoin-cli" target="_blank" rel="noopener noreferrer">payjoin-cli<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a> and make a <code>config.toml</code> in the directory we plan on running payjoin-cli from:</p> <div class="language- extra-class"><pre class="language-text"><code># config.toml
+bitcoind_rpcuser = &quot;payjoin&quot;
+bitcoind_rpcpass = &quot;payjoin&quot;
+bitcoind_rpchost = &quot;http://localhost:38332/wallet/receiver&quot;
+</code></pre></div><p>We can now run the receiver:</p> <div class="language- extra-class"><pre class="language-text"><code>$ payjoin-cli receive 10000
+Listening at 0.0.0.0:3000. Configured to accept payjoin at BIP 21 Payjoin Uri:
+bitcoin:tb1q9e5qgztf6w4zz2m3ts3w2zp3psdqpgmtdkf7y0?amount=0.0001&amp;pj=https://localhost:3000/&amp;pjos=0
+</code></pre></div><h3 id="send-payjoin-"><a href="#send-payjoin-" class="header-anchor">#</a> Send payjoin!</h3> <p>Send a payjoin to the BIP21 Uri generated above, taking care to replace <code>localhost:3000</code> in the <code>pj=</code> parameter with the domain name where your server is running. This should work from any wallet that implements payjoin support, from any machine.</p> <p>E.g. sending from joinmarket:</p> <div class="language- extra-class"><pre class="language-text"><code>(jmvenv) $ sendpayment.py -m 0 wallet.jmdat &quot;bitcoin:tb1q9e5qgztf6w4zz2m3ts3w2zp3psdqpgmtdkf7y0?amount=0.0001&amp;pj=https://pj.example.com/&amp;pjos=0&quot;
+</code></pre></div></div> <footer class="page-edit"><div class="edit-link"><a href="https://github.com/payjoin/payjoindevkit.org/edit/main/docs/_blog/payjoin-v1-infrastructure.md" target="_blank" rel="noopener noreferrer">Edit this page</a> <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></div> <!----></footer> <!----> </main></div></div> <footer class="footer" data-v-b812d5fc><div class="wrap"><div class="wrap-border"><div class="inner"><div class="footer-content"><div class="footer-block"><h4>Docs</h4> <div><a href="/introduction/" class="nav-link">
+  Introduction
+</a></div><div><a href="/send-receive-test-payjoins/" class="nav-link">
+  Send and Receive Test Payjoins
+</a></div><div><a href="/examples/" class="nav-link">
+  Examples
+</a></div></div><div class="footer-block"><h4>Community</h4> <div><a href="https://discord.gg/6rJD9R684h" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Discord
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div><div><a href="https://github.com/payjoin" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  GitHub
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div><div><a href="https://github.com/orgs/payjoin/projects/1" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  PDK Roadmap
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div></div><div class="footer-block"><h4>More</h4> <div><a href="https://payjoin.org" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Payjoin.org
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div><div><a href="/blog/" class="nav-link">
+  Blog
+</a></div></div></div> <p class="copyright">Copyright © 2024 PDK Developers</p></div></div></div></footer></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.f563d265.js" defer></script><script src="/assets/js/9.9d8ca1c3.js" defer></script><script src="/assets/js/1.6444ba8b.js" defer></script><script src="/assets/js/16.6d958b8b.js" defer></script>
+  </body>
+</html>
