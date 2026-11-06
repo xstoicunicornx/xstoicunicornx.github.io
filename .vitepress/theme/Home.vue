@@ -1,9 +1,12 @@
 <script setup>
+import { computed } from 'vue'
 import { withBase } from 'vitepress'
 import { data } from './content.data.js'
+import { useItems } from './localChanges.js'
 import ItemList from './ItemList.vue'
 
-const active = data.items.filter((item) => !item.archived && item.status === 'active')
+const items = useItems()
+const active = computed(() => items.value.filter((item) => !item.archived && item.status === 'active'))
 </script>
 
 <template>

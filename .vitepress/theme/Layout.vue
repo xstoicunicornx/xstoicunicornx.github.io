@@ -1,22 +1,31 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useData, withBase } from 'vitepress'
 import { data } from './content.data.js'
+import { useItems } from './localChanges.js'
+import { loadToken } from './github.js'
+import { openToken } from './dialogs.js'
 import Home from './Home.vue'
 import ProjectItems from './ProjectItems.vue'
 import ItemPage from './ItemPage.vue'
 import ArchivePage from './ArchivePage.vue'
 import NewItemButton from './NewItemButton.vue'
-import NewItemPage from './NewItemPage.vue'
-import TokenPage from './TokenPage.vue'
+import ItemDialog from './ItemDialog.vue'
+import TokenDialog from './TokenDialog.vue'
+import Toast from './Toast.vue'
 
 const { site, frontmatter, page } = useData()
+const items = useItems()
+
+onMounted(loadToken)
 
 const projectSlug = computed(() => page.value.relativePath.match(/^projects\/([^/]+)\.md$/)?.[1])
 
+// Match the page to the built item by path, then show its latest local version.
 const item = computed(() => {
   const url = '/' + page.value.relativePath.replace(/\.md$/, '')
-  return data.items.find((item) => item.url === url)
+  const built = data.items.find((item) => item.url === url)
+  return built && items.value.find((item) => item.id === built.id)
 })
 
 const currentProject = computed(() => projectSlug.value ?? item.value?.project ?? '')
@@ -29,7 +38,7 @@ const currentProject = computed(() => projectSlug.value ?? item.value?.project ?
         <img class="avatar" :src="withBase('/avatar.jpg')" alt="" />
         {{ site.title }}
       </a>
-      <NewItemButton v-if="frontmatter.layout !== 'new'" :project="currentProject" />
+      <NewItemButton :project="currentProject" />
     </header>
 
     <main>
@@ -39,8 +48,6 @@ const currentProject = computed(() => projectSlug.value ?? item.value?.project ?
       </div>
       <Home v-else-if="frontmatter.layout === 'home'" />
       <ArchivePage v-else-if="frontmatter.layout === 'archive'" />
-      <NewItemPage v-else-if="frontmatter.layout === 'new'" />
-      <TokenPage v-else-if="frontmatter.layout === 'token'" />
       <ItemPage v-else-if="item" :item="item" />
       <template v-else>
         <article class="prose">
@@ -52,7 +59,11 @@ const currentProject = computed(() => projectSlug.value ?? item.value?.project ?
 
     <footer class="site-footer">
       <a :href="withBase('/archive')">Archive</a>
-      <a :href="withBase('/token')">Token</a>
+      <button type="button" class="link-button" @click="openToken">Token</button>
     </footer>
+
+    <ItemDialog />
+    <TokenDialog />
+    <Toast />
   </div>
 </template>

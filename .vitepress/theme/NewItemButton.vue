@@ -1,14 +1,9 @@
 <script setup>
-import { computed } from 'vue'
-import { withBase } from 'vitepress'
+import { openNew } from './dialogs.js'
 
-const props = defineProps({ project: { type: String, default: '' } })
-
-const href = computed(() =>
-  withBase(props.project ? `/new?project=${encodeURIComponent(props.project)}` : '/new')
-)
+defineProps({ project: { type: String, default: '' } })
 </script>
 
 <template>
-  <a class="new-item" :href="href">New item</a>
+  <button type="button" class="new-item" @click="openNew(project)">New item</button>
 </template>

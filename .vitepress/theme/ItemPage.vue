@@ -16,16 +16,6 @@ const projectNames = Object.fromEntries(data.projects.map((p) => [p.slug, p.name
       <dt>Project</dt>
       <dd><a :href="withBase(`/projects/${item.project}`)">{{ projectNames[item.project] }}</a></dd>
 
-      <template v-if="item.related.length">
-        <dt>Related</dt>
-        <dd>
-          <template v-for="(slug, i) in item.related" :key="slug">
-            <span v-if="i">, </span>
-            <a :href="withBase(`/projects/${slug}`)">{{ projectNames[slug] }}</a>
-          </template>
-        </dd>
-      </template>
-
       <dt>Type</dt>
       <dd>{{ item.type }}</dd>
 
@@ -45,6 +35,11 @@ const projectNames = Object.fromEntries(data.projects.map((p) => [p.slug, p.name
         <dd>{{ item.completed }}</dd>
       </template>
 
+      <template v-if="item.cancelled">
+        <dt>Cancelled</dt>
+        <dd>{{ item.cancelled }}</dd>
+      </template>
+
       <template v-if="item.issue">
         <dt>Issue</dt>
         <dd><a :href="item.issue">{{ item.issue }}</a></dd>
@@ -53,6 +48,11 @@ const projectNames = Object.fromEntries(data.projects.map((p) => [p.slug, p.name
       <template v-if="item.pr">
         <dt>PR</dt>
         <dd><a :href="item.pr">{{ item.pr }}</a></dd>
+      </template>
+
+      <template v-if="item.repo">
+        <dt>Repo</dt>
+        <dd><a :href="`https://github.com/${item.repo}`">{{ item.repo }}</a></dd>
       </template>
 
       <template v-if="item.links.length">

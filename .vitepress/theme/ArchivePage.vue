@@ -1,8 +1,10 @@
 <script setup>
-import { data } from './content.data.js'
+import { computed } from 'vue'
+import { useItems } from './localChanges.js'
 import ItemList from './ItemList.vue'
 
-const archived = data.items.filter((item) => item.archived)
+const items = useItems()
+const archived = computed(() => items.value.filter((item) => item.archived))
 </script>
 
 <template>

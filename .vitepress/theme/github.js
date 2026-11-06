@@ -1,26 +1,36 @@
 // Commits from the browser through the GitHub REST API, using a
 // fine-grained personal access token kept in this browser's localStorage.
 
+import { ref } from 'vue'
+
 const TOKEN_KEY = 'github-token'
 
-export function getToken() {
+// The saved token, shared by every component. Empty until loadToken() runs
+// in the browser, since localStorage does not exist during the build.
+export const token = ref('')
+
+export function loadToken() {
   try {
-    return localStorage.getItem(TOKEN_KEY) ?? ''
+    token.value = localStorage.getItem(TOKEN_KEY) ?? ''
   } catch {
-    return ''
+    token.value = ''
   }
 }
 
-export function setToken(token) {
+// Returns false if the browser blocked storage (private window, blocked
+// site data). The token still works until the page is reloaded.
+export function saveToken(value) {
+  token.value = value
   try {
-    localStorage.setItem(TOKEN_KEY, token)
+    localStorage.setItem(TOKEN_KEY, value)
+    return true
   } catch {
-    // Storage unavailable (private window, blocked site data). The token
-    // still works for this page load because the form keeps it in memory.
+    return false
   }
 }
 
 export function clearToken() {
+  token.value = ''
   try {
     localStorage.removeItem(TOKEN_KEY)
   } catch {}
@@ -93,6 +103,66 @@ export async function createItem(token, repo, branch, render) {
     if (status !== 422) throw new GitHubError(explain(status, data))
   }
   throw new GitHubError('Could not find a free item number after 5 tries.')
+}
+
+// Reads a file. Returns { text, sha }, or null if it does not exist.
+export async function getFile(token, repo, branch, path) {
+  const { status, data } = await request(token, 'GET', `/repos/${repo}/contents/${path}?ref=${branch}`)
+  if (status === 404) return null
+  if (status !== 200) throw new GitHubError(explain(status, data))
+  return { text: fromBase64(data.content), sha: data.sha }
+}
+
+// Overwrites a file. `sha` must be the version that was read, so a file
+// changed on GitHub in the meantime is rejected instead of overwritten.
+export async function updateFile(token, repo, branch, path, text, sha, message) {
+  const { status, data } = await request(token, 'PUT', `/repos/${repo}/contents/${path}`, {
+    message,
+    content: toBase64(text),
+    sha,
+    branch
+  })
+  if (status === 409) throw new GitHubError('The file changed on GitHub since it was read. Reload and try again.')
+  if (status !== 200) throw new GitHubError(explain(status, data))
+  return { commitUrl: data.commit?.html_url }
+}
+
+// Moves a file in a single commit using the Git Data API.
+export async function moveFile(token, repo, branch, from, to, text, message) {
+  const git = (method, path, body) => request(token, method, `/repos/${repo}/git${path}`, body)
+  const check = ({ status, data }, ok) => {
+    if (status !== ok) throw new GitHubError(explain(status, data))
+    return data
+  }
+
+  const ref = check(await git('GET', `/ref/heads/${branch}`), 200)
+  const parent = check(await git('GET', `/commits/${ref.object.sha}`), 200)
+  const tree = check(
+    await git('POST', '/trees', {
+      base_tree: parent.tree.sha,
+      tree: [
+        { path: to, mode: '100644', type: 'blob', content: text },
+        { path: from, mode: '100644', type: 'blob', sha: null }
+      ]
+    }),
+    201
+  )
+  const commit = check(
+    await git('POST', '/commits', { message, tree: tree.sha, parents: [ref.object.sha] }),
+    201
+  )
+  const updated = await git('PATCH', `/refs/heads/${branch}`, { sha: commit.sha })
+  if (updated.status === 422) {
+    throw new GitHubError('The repo changed while archiving. Try again.')
+  }
+  check(updated, 200)
+  return { commitUrl: commit.html_url }
+}
+
+function fromBase64(encoded) {
+  const binary = atob(encoded.replace(/\n/g, ''))
+  const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0))
+  return new TextDecoder().decode(bytes)
 }
 
 function toBase64(text) {

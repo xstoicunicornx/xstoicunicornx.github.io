@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import matter from 'gray-matter'
+import { parseItemFile } from './itemFile.js'
 import { validateItem } from './validate.js'
 
 // Loads projects and items at build time and fails the build on invalid data.
@@ -59,36 +59,23 @@ function loadItem(file, slugs) {
 
   if (!/^[1-9]\d*$/.test(match[2])) fail('filename must be a number, like 12.md')
 
-  const fm = matter(fs.readFileSync(file, 'utf-8')).data
+  let fields
+  try {
+    fields = parseItemFile(fs.readFileSync(file, 'utf-8')).fields
+  } catch (err) {
+    fail(err.message)
+  }
 
   const item = {
     id: Number(match[2]),
     file: name,
     url: match[1] ? `/items/archive/${match[2]}` : `/items/${match[2]}`,
     archived: Boolean(match[1]),
-    title: fm.title,
-    project: fm.project,
-    related: fm.related ?? [],
-    type: fm.type,
-    status: fm.status,
-    links: fm.links ?? [],
-    issue: fm.issue ?? null,
-    pr: fm.pr ?? null,
-    created: toDate(fm.created, 'created', fail),
-    activated: toDate(fm.activated, 'activated', fail),
-    completed: toDate(fm.completed, 'completed', fail)
+    ...fields
   }
 
   const errors = validateItem(item, slugs)
   if (errors.length) fail(errors.join('; '))
 
   return item
-}
-
-// YAML parses an unquoted 2026-11-06 as a Date at UTC midnight.
-function toDate(value, field, fail) {
-  if (value === undefined || value === null) return null
-  if (value instanceof Date) return value.toISOString().slice(0, 10)
-  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) return value
-  fail(`${field} must be a date like 2026-11-06`)
 }

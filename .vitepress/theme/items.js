@@ -2,6 +2,7 @@
 export function relevantDate(item) {
   if (item.status === 'active') return item.activated
   if (item.status === 'done') return item.completed
+  if (item.status === 'cancelled') return item.cancelled
   return item.created
 }
 
