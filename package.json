@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vitepress dev --host",
     "build": "vitepress build",
-    "preview": "vitepress preview"
+    "preview": "vitepress preview",
+    "test": "node --test \"tests/**/*.test.js\""
   },
   "devDependencies": {
     "js-yaml": "^5.5.0",

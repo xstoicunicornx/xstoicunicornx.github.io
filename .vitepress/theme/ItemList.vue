@@ -6,6 +6,7 @@ import { relevantDate, sortItems } from './items.js'
 import { advanceItem, advanceLabel, canCancel, cancelItem } from './actions.js'
 import { GitHubError, token } from './github.js'
 import { openEdit, openToken } from './dialogs.js'
+import { recordChange } from './localChanges.js'
 import { showToast } from './toast.js'
 
 const props = defineProps({
@@ -25,7 +26,8 @@ async function run(item, action) {
   }
   busy.value = new Set(busy.value).add(item.id)
   try {
-    const { text, commitUrl } = await action({ token: token.value, ...site.value.themeConfig }, item)
+    const { text, commitUrl, item: changed } = await action({ token: token.value, ...site.value.themeConfig }, item)
+    recordChange(changed)
     showToast(text, commitUrl ? { link: { href: commitUrl, text: 'View commit' } } : {})
   } catch (err) {
     showToast(err instanceof GitHubError ? err.message : `Request failed: ${err.message}`, { error: true })

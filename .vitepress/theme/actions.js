@@ -1,7 +1,6 @@
 import { NEXT_STATUS, STATUS_LABELS } from './constants.js'
 import { getFile, moveFile, updateFile, GitHubError } from './github.js'
 import { parseItemFile, renderItemFile, today, withStatus } from './itemFile.js'
-import { recordChange } from './localChanges.js'
 
 // Label for the advance button, or null when there is nothing to advance to.
 export function advanceLabel(item) {
@@ -13,6 +12,9 @@ export function advanceLabel(item) {
 export function canCancel(item) {
   return !item.archived && item.status !== 'done' && item.status !== 'cancelled'
 }
+
+// Each action commits to GitHub and returns { text, commitUrl, item },
+// where item is the changed item for the caller to show right away.
 
 // Reads the item from GitHub and stops if it no longer matches what the page shows.
 async function readCurrent(gh, item) {
@@ -40,8 +42,7 @@ export async function advanceItem(gh, item) {
       renderItemFile(fields, current.description), current.sha,
       `Move item ${item.id} to ${next}: ${fields.title}`
     )
-    recordChange({ ...item, ...fields })
-    return { ...result, text: `Moved item ${item.id} to ${next}.` }
+    return { ...result, text: `Moved item ${item.id} to ${next}.`, item: { ...item, ...fields } }
   }
 
   const to = `items/archive/${item.id}.md`
@@ -49,14 +50,11 @@ export async function advanceItem(gh, item) {
     gh.token, gh.repo, gh.branch, item.file, to, current.text,
     `Archive item ${item.id}: ${current.fields.title}`
   )
-  recordChange({
-    ...item,
-    ...current.fields,
-    archived: true,
-    file: to,
-    url: `/items/archive/${item.id}`
-  })
-  return { ...result, text: `Archived item ${item.id}.` }
+  return {
+    ...result,
+    text: `Archived item ${item.id}.`,
+    item: { ...item, ...current.fields, archived: true, file: to, url: `/items/archive/${item.id}` }
+  }
 }
 
 export async function cancelItem(gh, item) {
@@ -67,6 +65,5 @@ export async function cancelItem(gh, item) {
     renderItemFile(fields, current.description), current.sha,
     `Cancel item ${item.id}: ${fields.title}`
   )
-  recordChange({ ...item, ...fields })
-  return { ...result, text: `Cancelled item ${item.id}.` }
+  return { ...result, text: `Cancelled item ${item.id}.`, item: { ...item, ...fields } }
 }
