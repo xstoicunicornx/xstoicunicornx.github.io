@@ -6,5 +6,9 @@ export default defineConfig({
   cleanUrls: true,
   appearance: false,
   srcExclude: ['README.md'],
-  head: [['meta', { name: 'theme-color', content: '#0a1530' }]]
+  head: [['meta', { name: 'theme-color', content: '#0a1530' }]],
+  themeConfig: {
+    repo: 'xstoicunicornx/xstoicunicornx.github.io',
+    branch: 'main'
+  }
 })
