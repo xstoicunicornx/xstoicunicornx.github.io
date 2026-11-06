@@ -9,7 +9,7 @@ const { site, frontmatter, page } = useData()
   <div class="site">
     <header class="site-header">
       <a class="site-title" :href="withBase('/')">
-        <span class="moon" aria-hidden="true"></span>
+        <img class="avatar" :src="withBase('/avatar.jpg')" alt="" />
         {{ site.title }}
       </a>
     </header>
