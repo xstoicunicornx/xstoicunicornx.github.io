@@ -6,6 +6,7 @@ import { useItems } from './localChanges.js'
 import { loadToken } from './github.js'
 import { openToken } from './dialogs.js'
 import Home from './Home.vue'
+import ProjectHeader from './ProjectHeader.vue'
 import ProjectItems from './ProjectItems.vue'
 import ItemPage from './ItemPage.vue'
 import ArchivePage from './ArchivePage.vue'
@@ -50,6 +51,7 @@ const currentProject = computed(() => projectSlug.value ?? item.value?.project ?
       <ArchivePage v-else-if="frontmatter.layout === 'archive'" />
       <ItemPage v-else-if="item" :item="item" />
       <template v-else>
+        <ProjectHeader v-if="projectSlug" :project="projectSlug" />
         <article class="prose">
           <Content />
         </article>

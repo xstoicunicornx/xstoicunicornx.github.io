@@ -32,3 +32,27 @@ function checkUrl(value, field, errors) {
     errors.push(`${field} must be a http(s) URL, got ${JSON.stringify(value)}`)
   }
 }
+
+const REPO = /^[^/\s]+\/[^/\s]+$/
+
+// Checks the frontmatter of a projects/<name>.md page.
+// `org` is set for org projects and left out for personal repos.
+export function validateProjectPage(fm) {
+  const errors = []
+  if (fm.org !== undefined && (typeof fm.org !== 'string' || !/^[^/\s]+$/.test(fm.org))) {
+    errors.push('org must be a GitHub org name, like payjoin')
+  }
+  if (typeof fm.repo !== 'string' || !REPO.test(fm.repo)) {
+    errors.push('repo is required and must look like owner/name')
+  }
+  const repos = fm.repos ?? []
+  if (!Array.isArray(repos)) {
+    errors.push('repos must be a list')
+  } else {
+    for (const repo of repos) {
+      if (typeof repo !== 'string' || !REPO.test(repo)) errors.push(`repos entry must look like owner/name, got ${JSON.stringify(repo)}`)
+      else if (repo === fm.repo) errors.push(`repos repeats the main repo ${repo}`)
+    }
+  }
+  return errors
+}

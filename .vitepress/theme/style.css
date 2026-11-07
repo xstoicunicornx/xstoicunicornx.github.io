@@ -39,9 +39,18 @@ a {
 }
 
 .site {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
   max-width: 44rem;
   margin: 0 auto;
-  padding: 2.5rem 1rem 4rem;
+  padding: 2.5rem 1rem 1.5rem;
+}
+
+/* Main grows to fill the page, so the footer sits at the bottom. */
+.site > main {
+  flex: 1;
 }
 
 /* header */
@@ -544,6 +553,41 @@ a {
 }
 
 /* project pages */
+
+.project-header {
+  margin-bottom: 1.5rem;
+}
+
+.project-header .page-title {
+  margin-bottom: 0.4rem;
+}
+
+.project-header .page-title a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.project-header .page-title a:hover {
+  color: var(--accent);
+}
+
+.repo-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+}
+
+.repo-links a {
+  color: var(--muted);
+}
+
+.repo-links .repo-main a {
+  color: var(--accent);
+}
 
 .prose h1 {
   font-weight: 600;
