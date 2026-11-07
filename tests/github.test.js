@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { GitHubError, createItem, getFile, updateFile } from '../.vitepress/theme/github.js'
+import { GitHubError, createItem, getFile, getIssue, updateFile } from '../.vitepress/theme/github.js'
 import { fakeGitHub, fakeRepo } from './helpers.js'
 
 const render = (id) => ({ content: 'x', message: `Add item ${id}` })
@@ -68,4 +68,16 @@ test('updateFile refuses to overwrite a changed file', async () => {
   fakeRepo('x')
   await assert.rejects(updateFile('t', 'o/r', 'main', 'items/7.md', 'x', 'OLD', 'm'), /changed on GitHub/)
   assert.deepEqual(await updateFile('t', 'o/r', 'main', 'items/7.md', 'x', 'S1', 'm'), { commitUrl: 'C' })
+})
+
+test('requests send the token only when there is one', async () => {
+  const headers = []
+  globalThis.fetch = async (url, opts) => {
+    headers.push(opts.headers)
+    return { status: 200, json: async () => ({ title: 't', state: 'open' }) }
+  }
+  await getIssue('tok', 'o/r', 1)
+  await getIssue('', 'o/r', 1)
+  assert.equal(headers[0].Authorization, 'Bearer tok')
+  assert.equal('Authorization' in headers[1], false)
 })

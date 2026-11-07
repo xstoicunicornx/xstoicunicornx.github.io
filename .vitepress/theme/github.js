@@ -44,7 +44,8 @@ async function request(token, method, path, body) {
     cache: 'no-store',
     headers: {
       Accept: 'application/vnd.github+json',
-      Authorization: `Bearer ${token}`,
+      // Public reads work without a token, at a lower rate limit.
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       'X-GitHub-Api-Version': '2022-11-28',
       ...(body ? { 'Content-Type': 'application/json' } : {})
     },
@@ -61,8 +62,8 @@ function explain(status, data) {
   return `GitHub returned ${status}: ${data.message ?? 'unknown error'}`
 }
 
-// Reads an issue or PR; GitHub serves both from the issues endpoint.
-// Returns null if it does not exist or the token cannot see it.
+// Reads an issue or PR; GitHub serves both from the issues endpoint. An empty
+// token reads without one. Returns null if it does not exist or cannot be seen.
 export async function getIssue(token, repo, number) {
   const { status, data } = await request(token, 'GET', `/repos/${repo}/issues/${number}`)
   if (status === 404 || status === 410) return null
