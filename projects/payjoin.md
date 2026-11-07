@@ -1,5 +1,6 @@
 ---
 org: payjoin
 repo: payjoin/rust-payjoin
-repos: []
+repos:
+  - payjoin/bitcoin_uri
 ---

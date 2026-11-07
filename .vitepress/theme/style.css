@@ -5,6 +5,7 @@
   --border: #1f3466;
   --text: #e4ecf7;
   --accent: #bcd4ff;
+  --accent-soft: rgba(188, 212, 255, 0.16);
   --muted: #8a9cc0;
 
   --sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -64,6 +65,8 @@ a {
 }
 
 .new-item {
+  /* Stays on the right on pages without the site title. */
+  margin-left: auto;
   padding: 0.4rem 0.9rem;
   cursor: pointer;
   font: inherit;
@@ -565,38 +568,83 @@ a {
 
 /* project pages */
 
-.project-header {
-  margin-bottom: 1.5rem;
+.project-title {
+  min-width: 0;
+  margin: 0;
 }
 
-.project-header .page-title {
-  margin-bottom: 0.4rem;
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  margin-right: -0.25rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
 }
 
-.project-header .page-title a {
+.back-link:hover,
+.back-link:focus-visible {
+  border-color: var(--accent);
+}
+
+.project-title a {
   color: var(--text);
   text-decoration: none;
 }
 
-.project-header .page-title a:hover {
+.project-title a:hover {
   color: var(--accent);
+}
+
+.repo-box {
+  margin: 0 0 2rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
 }
 
 .repo-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem 1rem;
+  gap: 0.5rem;
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 0.9rem;
 }
 
-.repo-links a {
+.repo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.repo-link svg {
+  flex-shrink: 0;
   color: var(--muted);
 }
 
-.repo-links .repo-main a {
+.repo-link:hover,
+.repo-link:focus-visible {
+  border-color: var(--accent);
+}
+
+.repo-link.repo-main {
+  background: var(--accent-soft);
+}
+
+.repo-link.repo-main svg {
   color: var(--accent);
 }
 

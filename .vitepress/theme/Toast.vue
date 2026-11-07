@@ -5,7 +5,7 @@ import { toast } from './toast.js'
 <template>
   <div v-if="toast" class="toast" :class="{ 'toast-error': toast.error }" role="status">
     {{ toast.text }}
-    <a v-if="toast.link?.href" :href="toast.link.href">{{ toast.link.text }}</a>
+    <a v-if="toast.link?.href" :href="toast.link.href" target="_blank" rel="noopener">{{ toast.link.text }}</a>
     <button v-else-if="toast.link" type="button" class="link-button" @click="toast.link.action">
       {{ toast.link.text }}
     </button>
