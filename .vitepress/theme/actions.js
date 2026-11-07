@@ -9,10 +9,6 @@ export function advanceLabel(item) {
   return 'Archive'
 }
 
-export function canCancel(item) {
-  return !item.archived && item.status !== 'done' && item.status !== 'cancelled'
-}
-
 // Each action commits to GitHub and returns { text, commitUrl, item },
 // where item is the changed item for the caller to show right away.
 
@@ -55,15 +51,4 @@ export async function advanceItem(gh, item) {
     text: `Archived item ${item.id}.`,
     item: { ...item, ...current.fields, archived: true, file: to, url: `/items/archive/${item.id}` }
   }
-}
-
-export async function cancelItem(gh, item) {
-  const current = await readCurrent(gh, item)
-  const fields = withStatus(current.fields, 'cancelled', today())
-  const result = await updateFile(
-    gh.token, gh.repo, gh.branch, item.file,
-    renderItemFile(fields, current.description), current.sha,
-    `Cancel item ${item.id}: ${fields.title}`
-  )
-  return { ...result, text: `Cancelled item ${item.id}.`, item: { ...item, ...fields } }
 }

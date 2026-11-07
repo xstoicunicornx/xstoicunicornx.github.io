@@ -165,10 +165,8 @@ a {
 }
 
 .item-row {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
   border-bottom: 1px solid var(--border);
+  cursor: pointer;
 }
 
 .item-row:hover,
@@ -180,16 +178,40 @@ a {
   opacity: 0.6;
 }
 
-.item-main {
+.item-head {
   display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.25rem;
+}
+
+.item-title {
   flex: 1;
   min-width: 0;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.6rem 0.25rem;
   color: inherit;
   text-decoration: none;
+}
+
+.item-title:hover {
+  color: var(--accent);
+}
+
+/* Fields shown below the row while hovered or focused. Touch screens have
+   no hover, so a tap opens the item page instead. */
+
+.item-row .item-details {
+  display: none;
+  margin: 0;
+  padding: 0.1rem 0.25rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+@media (hover: hover) {
+  .item-row:hover .item-details,
+  .item-row:focus-within .item-details {
+    display: grid;
+  }
 }
 
 /* Hover actions. Always visible on touch screens, which have no hover. */
@@ -203,8 +225,7 @@ a {
 }
 
 .item-row:hover .item-actions,
-.item-row:focus-within .item-actions,
-.item-row:has(details[open]) .item-actions {
+.item-row:focus-within .item-actions {
   display: flex;
 }
 
@@ -251,49 +272,6 @@ a {
 .icon-button:disabled,
 .action-button:disabled {
   cursor: wait;
-}
-
-.menu {
-  position: relative;
-}
-
-.menu summary {
-  list-style: none;
-}
-
-.menu summary::-webkit-details-marker {
-  display: none;
-}
-
-.menu-panel {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 0.3rem);
-  z-index: 10;
-  min-width: 9rem;
-  padding: 0.3rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--surface);
-}
-
-.menu-panel button {
-  display: block;
-  width: 100%;
-  padding: 0.4rem 0.6rem;
-  border: 0;
-  border-radius: 4px;
-  background: none;
-  color: var(--text);
-  font: inherit;
-  font-size: 0.9rem;
-  text-align: left;
-  cursor: pointer;
-}
-
-.menu-panel button:hover,
-.menu-panel button:focus-visible {
-  background: var(--surface-hover);
 }
 
 /* pop-ups */
@@ -359,6 +337,7 @@ a {
 .item-meta {
   display: flex;
   flex-shrink: 0;
+  align-items: baseline;
   gap: 0.75rem;
   color: var(--muted);
   font-size: 0.8rem;
@@ -550,6 +529,38 @@ a {
   list-style: none;
   border: 1px solid #e59a9a;
   color: #f2c4c4;
+}
+
+/* GitHub issue and PR references, colored like GitHub's dark theme */
+
+.gh-ref-icon {
+  flex-shrink: 0;
+  margin-right: 0.35rem;
+  vertical-align: -0.2em;
+}
+
+.gh-ref-number {
+  margin-left: 0.4rem;
+  color: var(--muted);
+}
+
+.gh-issue-open,
+.gh-pr-open {
+  color: #3fb950;
+}
+
+.gh-issue-completed,
+.gh-pr-merged {
+  color: #a371f7;
+}
+
+.gh-pr-closed {
+  color: #f85149;
+}
+
+.gh-issue-not-planned,
+.gh-pr-draft {
+  color: #9198a1;
 }
 
 /* project pages */

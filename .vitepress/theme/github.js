@@ -61,6 +61,15 @@ function explain(status, data) {
   return `GitHub returned ${status}: ${data.message ?? 'unknown error'}`
 }
 
+// Reads an issue or PR; GitHub serves both from the issues endpoint.
+// Returns null if it does not exist or the token cannot see it.
+export async function getIssue(token, repo, number) {
+  const { status, data } = await request(token, 'GET', `/repos/${repo}/issues/${number}`)
+  if (status === 404 || status === 410) return null
+  if (status !== 200) throw new GitHubError(explain(status, data))
+  return data
+}
+
 // Confirms the token can see the repo. Write access is only proven by a commit.
 export async function checkRepoAccess(token, repo) {
   const { status, data } = await request(token, 'GET', `/repos/${repo}`)

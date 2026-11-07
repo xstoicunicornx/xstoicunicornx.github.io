@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { advanceItem, advanceLabel, canCancel, cancelItem } from '../.vitepress/theme/actions.js'
+import { advanceItem, advanceLabel } from '../.vitepress/theme/actions.js'
 import { parseItemFile, renderItemFile, today } from '../.vitepress/theme/itemFile.js'
 import { baseFields, decodePut, fakeRepo, fileFor, gh, itemFor } from './helpers.js'
 
@@ -12,12 +12,6 @@ test('advance button labels', () => {
   assert.equal(label('done'), 'Archive')
   assert.equal(label('cancelled'), 'Archive')
   assert.equal(label('done', true), null)
-})
-
-test('cancel is offered only for open items', () => {
-  const can = (status, archived = false) => canCancel({ ...baseFields, status, archived })
-  assert.ok(can('todo') && can('queued') && can('active'))
-  assert.ok(!can('done') && !can('cancelled') && !can('todo', true))
 })
 
 for (const [from, to, dateField] of [
@@ -78,20 +72,9 @@ for (const status of ['done', 'cancelled']) {
   })
 }
 
-test('cancel sets status and cancelled date', async () => {
-  const calls = fakeRepo(renderItemFile(baseFields, ''))
-  const result = await cancelItem(gh, itemFor(baseFields))
-  const written = parseItemFile(decodePut(calls).text)
-  assert.equal(written.fields.status, 'cancelled')
-  assert.equal(written.fields.cancelled, today())
-  assert.match(decodePut(calls).message, /^Cancel item 7: /)
-  assert.equal(result.item.status, 'cancelled')
-})
-
-test('actions stop without committing when GitHub has a different status', async () => {
+test('advancing stops without committing when GitHub has a different status', async () => {
   const calls = fakeRepo(fileFor({ status: 'queued' }))
   await assert.rejects(advanceItem(gh, itemFor(baseFields)), /is queued on GitHub but todo here/)
-  await assert.rejects(cancelItem(gh, itemFor(baseFields)), /is queued on GitHub but todo here/)
   assert.equal(calls.filter((c) => c.method !== 'GET').length, 0)
 })
 
