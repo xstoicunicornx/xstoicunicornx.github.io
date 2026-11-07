@@ -111,6 +111,9 @@ a {
   height: 3rem;
   border-radius: 50%;
   border: 1px solid var(--border);
+  /* Shared by the home page and project page headers. */
+  flex-shrink: 0;
+  background: var(--surface);
 }
 
 /* home */
@@ -592,9 +595,13 @@ a {
 }
 
 .project-title a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
   color: var(--text);
   text-decoration: none;
 }
+
 
 .project-title a:hover {
   color: var(--accent);

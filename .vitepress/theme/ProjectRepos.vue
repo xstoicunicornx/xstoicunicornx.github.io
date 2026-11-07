@@ -14,9 +14,10 @@ const label = (repo) => {
 }
 
 // For a personal project the title already links to the main repo.
+// An org project may have no main repo, in which case none is highlighted.
 const links = computed(() => {
-  const others = frontmatter.value.repos ?? []
-  return frontmatter.value.org ? [frontmatter.value.repo, ...others] : others
+  const { org, repo, repos = [] } = frontmatter.value
+  return org && repo ? [repo, ...repos] : repos
 })
 </script>
 
@@ -26,7 +27,7 @@ const links = computed(() => {
       <li v-for="(repo, i) in links" :key="repo">
         <a
           class="repo-link"
-          :class="{ 'repo-main': frontmatter.org && i === 0 }"
+          :class="{ 'repo-main': frontmatter.org && frontmatter.repo && i === 0 }"
           :href="`https://github.com/${repo}`"
           target="_blank"
           rel="noopener"

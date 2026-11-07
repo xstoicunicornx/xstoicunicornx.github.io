@@ -36,14 +36,17 @@ function checkUrl(value, field, errors) {
 const REPO = /^[^/\s]+\/[^/\s]+$/
 
 // Checks the frontmatter of a projects/<name>.md page.
-// `org` is set for org projects and left out for personal repos.
+// `org` is a GitHub org or user; leave it out for a single personal repo.
+// `repo` is the main repo, optional when `org` is set.
 export function validateProjectPage(fm) {
   const errors = []
   if (fm.org !== undefined && (typeof fm.org !== 'string' || !/^[^/\s]+$/.test(fm.org))) {
-    errors.push('org must be a GitHub org name, like payjoin')
+    errors.push('org must be a GitHub org or user name, like payjoin')
   }
-  if (typeof fm.repo !== 'string' || !REPO.test(fm.repo)) {
-    errors.push('repo is required and must look like owner/name')
+  if (fm.repo === undefined) {
+    if (fm.org === undefined) errors.push('repo is required when there is no org')
+  } else if (typeof fm.repo !== 'string' || !REPO.test(fm.repo)) {
+    errors.push('repo must look like owner/name')
   }
   const repos = fm.repos ?? []
   if (!Array.isArray(repos)) {

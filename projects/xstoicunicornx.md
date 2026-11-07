@@ -1,0 +1,30 @@
+---
+org: xstoicunicornx
+repos:
+  - xstoicunicornx/.dotfiles
+  - xstoicunicornx/awesome-ctv-csfs
+  - xstoicunicornx/bitcoin
+  - xstoicunicornx/bitcoin-transaction-decoder
+  - xstoicunicornx/bitdevs
+  - xstoicunicornx/blockstats
+  - xstoicunicornx/browser-payjoin
+  - xstoicunicornx/ChicagoBitdevs.github.io
+  - xstoicunicornx/concurrent-psbt
+  - xstoicunicornx/instapaper.koplugin
+  - xstoicunicornx/koreader_collections
+  - xstoicunicornx/ldk-node
+  - xstoicunicornx/liana
+  - xstoicunicornx/lightningdevkit.org
+  - xstoicunicornx/node-payjoin
+  - xstoicunicornx/payjoindevkit.org
+  - xstoicunicornx/pj-directory-timing-analysis
+  - xstoicunicornx/rbitcoin
+  - xstoicunicornx/react-native-payjoin
+  - xstoicunicornx/rm-appload
+  - xstoicunicornx/rust-payjoin
+  - xstoicunicornx/tokyonight-tmux
+  - xstoicunicornx/xstoicunicornx.github.io
+  - xstoicunicornx/yushan
+  - xstoicunicornx/yushan-nodes
+  - xstoicunicornx/zeus
+---
